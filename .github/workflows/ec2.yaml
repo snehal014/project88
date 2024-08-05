@@ -1,4 +1,4 @@
-name: create EC2 Instance and S3 Bucket
+name: create a ec2 instance and s3
 on:
   push:
     branches: [ main ]
