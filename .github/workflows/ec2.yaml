@@ -1,3 +1,4 @@
+name: create EC2 Instance and S3 Bucket
 on:
   push:
     branches: [ main ]
