@@ -1,6 +1,5 @@
----
 AWSTemplateFormatVersion: 2010-09-09
-Description: create ec2 instance
+Description: Create an EC2 instance and an S3 bucket
 
 Resources:
   WebAppInstance:
@@ -8,7 +7,8 @@ Resources:
     Properties:
       ImageId: ami-0d5eff06f840b45e9 # ImageID valid only in us-east-1 region
       InstanceType: t2.micro
- MyS3Bucket:
-   Type: AWS::S3::Bucket
-   Properties:
-     BucketName: project246
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-unique-bucket-name-1234567890 # Ensure this name is globally unique
