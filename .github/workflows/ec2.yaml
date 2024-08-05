@@ -1,4 +1,4 @@
-name: Create EC2 Instance and S3 Bucket
+name: Update EC2 Instance and S3 Bucket
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   Deployment:
-    name: Create EC2 Instance and S3 Bucket
+    name: Update EC2 Instance and S3 Bucket
     runs-on: ubuntu-latest
 
     steps:
@@ -16,14 +16,21 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: '3.7'
-          
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install awscli
 
-      - name: Deploy CloudFormation Stack
-        run: aws cloudformation create-stack --stack-name ec2-s3-example --template-body file://ec2.yaml
+      - name: Deploy or Update CloudFormation Stack
+        run: |
+          if aws cloudformation describe-stacks --stack-name ec2-s3-example; then
+            echo "Updating existing stack"
+            aws cloudformation update-stack --stack-name ec2-s3-example --template-body file://ec2.yaml
+          else
+            echo "Creating new stack"
+            aws cloudformation create-stack --stack-name ec2-s3-example --template-body file://ec2.yaml
+          fi
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
