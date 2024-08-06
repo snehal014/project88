@@ -29,7 +29,7 @@ Resources:
             Args:
               - hive-script
               - !Sub |
-                curl -L -o /home/hadoop/dataset.zip 'https://www.kaggle.com/datasets/username/dataset/download'
+                curl -L -o /home/hadoop/dataset.zip 'https://www.kaggle.com/code/mrisdal/exploring-survival-on-the-titanic/download'
                 unzip /home/hadoop/dataset.zip -d /home/hadoop/
       BootstrapActions:
         - Name: Install Kaggle CLI
