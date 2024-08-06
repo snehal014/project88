@@ -21,6 +21,11 @@ Resources:
       LogUri: !Sub 's3://${LogBucket}/logs/'
       JobFlowRole: EMR_EC2_DefaultRole
       ServiceRole: EMR_DefaultRole
+      BootstrapActions:
+        - Name: Install Kaggle CLI
+          ScriptBootstrapAction:
+            Path: !Sub 'https://raw.githubusercontent.com/snehal014/project88/main/.github/workflows/kaggle_cli.sh'
+            Args: []
       Steps:
         - Name: Download Kaggle Data
           ActionOnFailure: TERMINATE_CLUSTER
@@ -29,13 +34,8 @@ Resources:
             Args:
               - hive-script
               - !Sub |
-                curl -L -o /home/hadoop/dataset.zip 'https://www.kaggle.com/code/mrisdal/exploring-survival-on-the-titanic/download'
+                kaggle datasets download -d mrisdal/exploring-survival-on-the-titanic -p /home/hadoop/
                 unzip /home/hadoop/dataset.zip -d /home/hadoop/
-      BootstrapActions:
-        - Name: Install Kaggle CLI
-          ScriptBootstrapAction:
-            Path: !Sub 'https://github.com/snehal014/project88/blob/main/.github/workflows/kaggle_cli.sh'
-            Args: []
             
   LogBucket:
     Type: AWS::S3::Bucket
