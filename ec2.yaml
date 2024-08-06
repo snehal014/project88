@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Create an EC2 instance and an S3 bucket
+Description: Create an EC2 instance and an S3 bucket and an EMR Cluster
 
 Resources:
   WebAppInstance:
@@ -11,4 +11,22 @@ Resources:
   WebAppBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "vita123-${AWS::AccountId}-${AWS::Region}"
+      BucketName: vita12345
+
+  EMRCluster:
+    Type: AWS::EMR::Cluster
+    Properties:
+      Name: "MyEMRCluster"
+      ReleaseLabel: emr-6.10.0    
+      Applications:
+        -Name: Hadoop
+        -Name: Spark
+      Instances:
+        MasterInstanceType: m5.xlarge
+        SlaveInstanceType: m5.xlarge
+        Instancecount: 2
+        EC2SubnetId: subnet-0867486a2c91c88c8
+        KeepJobFlowAliveWhenNoSeps: true
+      JobFlowRole: EMR_EC2_DefaultRole
+      ServiceRole: EMR_DefaultRole
+      LogUri: !Sub "s3://${WebAppBucket}/logs/"
