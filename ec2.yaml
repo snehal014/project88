@@ -5,12 +5,11 @@ Resources:
   WebAppInstance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceName: Snehal
+      Name: Vita
       ImageId: ami-0d5eff06f840b45e9  # ImageID valid only in us-east-1 region
       InstanceType: t2.micro
   
   WebAppBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: vita12345
-
+      BucketName: vita1234
