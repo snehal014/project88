@@ -1,27 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Create an EC2 instance, an S3 bucket, and an EMR Cluster
+Description: Create an EMR Cluster and download data from Kaggle
 
 Resources:
-  WebAppInstance:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ami-0d5eff06f840b45e9  # ImageID valid only in us-east-1 region
-      InstanceType: t2.micro
-      Tags:
-        - Key: Name
-          Value: Vita
-  
-  WebAppBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: vita1234-unique  # Ensure this bucket name is globally unique
-
-  # Example of adding an EMR Cluster
   MyEMRCluster:
     Type: AWS::EMR::Cluster
     Properties:
-      Name: MyCluster
-      ReleaseLabel: emr-6.4.0
+      Name: MyEMRCluster
+      ReleaseLabel: emr-6.4.0  # Use the appropriate EMR release version
       Instances:
         MasterInstanceGroup:
           InstanceCount: 1
@@ -33,7 +18,31 @@ Resources:
       Applications:
         - Name: Hadoop
         - Name: Spark
-      VisibleToAllUsers: true
-      LogUri: !Sub 's3://${WebAppBucket}/logs/'
+      LogUri: !Sub 's3://${LogBucket}/logs/'
       JobFlowRole: EMR_EC2_DefaultRole
       ServiceRole: EMR_DefaultRole
+      Steps:
+        - Name: Download Kaggle Data
+          ActionOnFailure: TERMINATE_CLUSTER
+          HadoopJarStep:
+            Jar: command-runner.jar
+            Args:
+              - hive-script
+              - !Sub |
+                curl -L -o /home/hadoop/dataset.zip 'https://www.kaggle.com/datasets/username/dataset/download'
+                unzip /home/hadoop/dataset.zip -d /home/hadoop/
+      BootstrapActions:
+        - Name: Install Kaggle CLI
+          ScriptBootstrapAction:
+            Path: !Sub 's3://${ScriptBucket}/install_kaggle_cli.sh'
+            Args: []
+            
+  LogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-emr-logs-bucket-unique  # Ensure this bucket name is unique
+
+  ScriptBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: my-emr-scripts-bucket-unique  # Ensure this bucket name is unique
