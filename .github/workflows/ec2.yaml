@@ -17,12 +17,13 @@ jobs:
           python-version: '3.7'
       
       - name: Install dependencies
-        run: |
+        run: 
           python -m pip install --upgrade pip
           pip install awscli
       
       - name: Create or Update CloudFormation Stack
-        run: |
+        run: 
+          aws cloudformation create-stack --stack-name ec2-example --template-body file://ec2.yaml
           aws cloudformation update-stack --stack-name ec2-example --template-body file://ec2.yaml
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
