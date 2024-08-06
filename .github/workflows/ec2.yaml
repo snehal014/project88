@@ -1,4 +1,4 @@
-name: Deploy EC2 and EMR Resources
+name: Deploy EC2, S3, and EMR Resources
 on:
   push:
     branches: [ main ]
@@ -23,7 +23,7 @@ jobs:
       
       - name: Create or Update CloudFormation Stack
         run: |
-          STACK_NAME="ec2-example"
+          STACK_NAME="my-stack"
           TEMPLATE_FILE="file://ec2.yaml"
           
           # Check if the stack exists
@@ -32,11 +32,11 @@ jobs:
           if [ "$STACK_EXISTS" == "$STACK_NAME" ]; then
             # Stack exists, update it
             echo "Updating stack $STACK_NAME"
-            aws cloudformation update-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE
+            aws cloudformation update-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
           else
             # Stack does not exist, create it
             echo "Creating stack $STACK_NAME"
-            aws cloudformation create-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE
+            aws cloudformation create-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
           fi
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
