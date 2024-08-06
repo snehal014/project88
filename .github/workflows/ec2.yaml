@@ -23,24 +23,17 @@ jobs:
           TEMPLATE_FILE="file://ec2.yaml"
           AWS_REGION="us-east-1"
           
-          # Delete the stack if it exists and is in a terminal state
-          STACK_STATUS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].StackStatus" --output text 2>&1 || echo "")
+          # Check if the stack exists
+          STACK_EXISTS=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].StackName" --output text 2>&1 || echo "")
 
-          if [[ "$STACK_STATUS" == "ROLLBACK_COMPLETE" || "$STACK_STATUS" == "DELETE_COMPLETE" ]]; then
-            echo "Deleting stack $STACK_NAME"
-            aws cloudformation delete-stack --stack-name $STACK_NAME
-            aws cloudformation wait stack-delete-complete --stack-name $STACK_NAME
-          fi
-
-          # Create or update the CloudFormation stack
-          if [[ "$STACK_STATUS" == "ROLLBACK_COMPLETE" || -z "$STACK_STATUS" ]]; then
-            echo "Creating stack $STACK_NAME"
-            aws cloudformation create-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
-            aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
-          else
+          if [ "$STACK_EXISTS" == "$STACK_NAME" ]; then
             echo "Updating stack $STACK_NAME"
             aws cloudformation update-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
             aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+          else
+            echo "Creating stack $STACK_NAME"
+            aws cloudformation create-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
+            aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
           fi
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
