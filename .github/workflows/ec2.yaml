@@ -19,7 +19,7 @@ jobs:
       - name: Deploy CloudFormation Stack
         run: |
           STACK_NAME="my-emr-stack"
-          TEMPLATE_FILE="file://cloudformation.yaml"
+          TEMPLATE_FILE="file://ec2.yaml"
           AWS_REGION="us-east-1"
           
           # Create or update the CloudFormation stack
