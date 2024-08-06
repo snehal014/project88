@@ -2,7 +2,6 @@ name: create a ec2 instance
 on:
   push:
     branches: [ main ]
-
 jobs:
   Deployment:
     name: create EC2 Instance and S3 Bucket
