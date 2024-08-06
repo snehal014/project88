@@ -29,14 +29,15 @@ jobs:
           if [ "$STACK_EXISTS" == "$STACK_NAME" ]; then
             echo "Updating stack $STACK_NAME"
             aws cloudformation update-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
-            aws cloudformation wait stack-update-complete --stack-name $STACK_NAME
+            aws cloudformation wait stack-update-complete --stack-name $STACK_NAME || { echo "Stack update failed"; exit 1; }
           else
             echo "Creating stack $STACK_NAME"
             aws cloudformation create-stack --stack-name $STACK_NAME --template-body $TEMPLATE_FILE --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM
-            aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
+            aws cloudformation wait stack-create-complete --stack-name $STACK_NAME || { echo "Stack creation failed"; exit 1; }
           fi
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
           AWS_DEFAULT_REGION: us-east-1
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+``
