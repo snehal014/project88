@@ -23,14 +23,8 @@ jobs:
           pip install awscli
 
       - name: Deploy or Update CloudFormation Stack
-        run: |
-          if aws cloudformation describe-stacks --stack-name ec2-s3-example; then
-            echo "Updating existing stack"
+        run:
             aws cloudformation update-stack --stack-name ec2-s3-example --template-body file://ec2.yaml
-          else
-            echo "Creating new stack"
-            aws cloudformation create-stack --stack-name ec2-s3-example --template-body file://ec2.yaml
-          fi
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
