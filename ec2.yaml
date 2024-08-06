@@ -34,7 +34,7 @@ Resources:
       BootstrapActions:
         - Name: Install Kaggle CLI
           ScriptBootstrapAction:
-            Path: !Sub 's3://${ScriptBucket}/install_kaggle_cli.sh'
+            Path: !Sub 'https://github.com/snehal014/project88/blob/main/.github/workflows/kaggle_cli.sh'
             Args: []
             
   LogBucket:
